@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Global background + scroll fix */
+html, body {
+  background-color: #0f172a;
+  overscroll-behavior: none;
+  height: 100%;
+}
+
+/* Font */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100%;
+}
