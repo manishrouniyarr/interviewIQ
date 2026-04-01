@@ -6,6 +6,8 @@ type AlertType = { type: 'success' | 'error'; message: string } | null;
 
 export default function Settings() {
   const { user, token, updateUser } = useAuth();
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
 
   // Profile form
   const [name, setName] = useState(user?.name || '');
@@ -37,7 +39,7 @@ export default function Settings() {
 
     setIsSavingProfile(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/update-profile', {
+      const response = await fetch(`${BASE_URL}/api/auth/update-profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +77,7 @@ export default function Settings() {
 
     setIsSavingPassword(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/change-password', {
+      const response = await fetch(`${BASE_URL}/api/auth/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

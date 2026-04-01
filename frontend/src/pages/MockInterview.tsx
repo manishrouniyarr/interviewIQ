@@ -31,6 +31,7 @@ export default function MockInterview() {
   const [isSaving, setIsSaving] = useState(false);
   const [interviewSummary, setInterviewSummary] = useState('');
   const [showDebrief, setShowDebrief] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_URL;
 
   const extractTextFromPDF = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
@@ -61,7 +62,7 @@ export default function MockInterview() {
 
   const suggestRoleFromResume = async (text: string) => {
     try {
-      const response = await fetch('http://localhost:5001/api/interview/suggest-role', {
+      const response = await fetch(`${BASE_URL}/api/interview/suggest-role`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ resumeText: text }),
@@ -101,7 +102,7 @@ export default function MockInterview() {
   const generateQuestions = async () => {
     setIsGenerating(true);
     try {
-      const response = await fetch('http://localhost:5001/api/interview/generate-questions', {
+      const response = await fetch(`${BASE_URL}/api/interview/generate-questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role, difficulty, resumeText }),
@@ -126,7 +127,7 @@ export default function MockInterview() {
     setIsFeedbackLoading(true);
     setFeedback('');
     try {
-      const response = await fetch('http://localhost:5001/api/interview/get-feedback', {
+      const response = await fetch(`${BASE_URL}/api/interview/get-feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ question: selectedQuestion.question, answer: currentAnswer }),
@@ -162,7 +163,7 @@ export default function MockInterview() {
     const overallScore = Math.round(
       answeredQuestions.reduce((sum, q) => sum + (q.score || 0), 0) / answeredQuestions.length
     );
-    const response = await fetch('http://localhost:5001/api/interview/save-interview', {
+    const response = await fetch(`${BASE_URL}/api/interview/save-interview`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ role, difficulty, questions: answeredQuestions, overallScore, duration: '45 min' }),

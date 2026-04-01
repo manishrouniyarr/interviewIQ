@@ -29,7 +29,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  
+  const BASE_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchStats();
@@ -37,7 +37,7 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/interview/stats', {
+      const response = await fetch(`${BASE_URL}/api/interview/stats`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error('Failed to fetch stats');

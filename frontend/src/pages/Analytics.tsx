@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 
 const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 interface TopicData { skill: string; score: number; }
 interface Stats {
@@ -27,9 +28,9 @@ export default function Analytics() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/interview/stats', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(`${BASE_URL}/api/interview/stats`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
       setStats(data);
