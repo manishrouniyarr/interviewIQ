@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, User, Loader2 } from 'lucide-react';
+import Footer from '../components/Footer';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -34,7 +35,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-slate-900 flex flex-col">
       <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-8 w-full max-w-md">
         
         {/* Header */}
@@ -133,6 +134,7 @@ export default function Signup() {
           </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

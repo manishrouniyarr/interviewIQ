@@ -5,6 +5,7 @@ LayoutDashboard, MessageSquare, BarChart2,
   Settings, LogOut, ChevronLeft, ChevronRight, Menu
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Footer from '../components/Footer';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -150,23 +151,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-y-auto">
           {children}
         </main>
-
-        {/* Footer */}
-<footer className="text-center py-3 text-xs text-slate-500 border-t border-slate-800 flex-shrink-0">
-  {'© '}{new Date().getFullYear()}{' Manish Rouniyar '}
-  <span className="mx-1">·</span>
-
-  <a
-    href="https://github.com/manishrouniyarr"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="hover:text-slate-300 transition"
-  >
-    GitHub
-  </a>
-</footer>
-
-
+        <Footer />
       </div>
     </div>
   );

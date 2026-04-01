@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Target, TrendingUp, Award } from 'lucide-react';
+import Footer from '../components/Footer';
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-slate-900 flex flex-col">
       {/* Navbar */}
       <nav className="container mx-auto px-6 py-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -56,6 +57,7 @@ export default function Landing() {
           />
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
