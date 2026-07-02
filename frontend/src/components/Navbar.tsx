@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, LogOut, Menu, X, LayoutDashboard, Mic, BarChart2, Sun, Moon } from 'lucide-react';
+import {LogOut, Menu, X, LayoutDashboard, Mic, BarChart2, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const NAV_LINKS = [
@@ -50,7 +50,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
           <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white dark:text-slate-900" />
+            <span className="text-white dark:text-slate-900 text-xs font-black tracking-tight">IQ</span>
           </div>
           <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">InterviewIQ</span>
         </Link>

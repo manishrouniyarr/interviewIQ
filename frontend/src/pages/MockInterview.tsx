@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import QuestionCard from '../components/QuestionCard';
-import { Upload, Sparkles, Loader2, Save, CheckCircle, X } from 'lucide-react';
+import { Upload, Loader2, Save, CheckCircle, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from "react-hot-toast";
 
@@ -309,7 +309,6 @@ export default function MockInterview() {
             {interviewSummary && (
               <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-5 mb-6 text-left">
                 <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
                   InterviewIQ Debrief
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{interviewSummary}</p>
@@ -431,7 +430,6 @@ export default function MockInterview() {
                         {feedback && (
                           <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl">
                             <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2 text-sm">
-                              <Sparkles className="w-4 h-4" />
                               InterviewIQ Feedback
                             </h4>
                             <p className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed text-sm">{feedback}</p>
@@ -471,8 +469,7 @@ function ResumeSkills({ skills }: { skills: string[] }) {
   return (
     <div className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-500/20 rounded-2xl p-5 mb-5">
       <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2 uppercase tracking-wide">
-        <Sparkles className="w-3.5 h-3.5" />
-        Resume analysis — questions personalized to your profile
+        Resume analysis questions personalized to your profile
       </h3>
       <div className="flex flex-wrap gap-2">
         {visible.map((skill) => (

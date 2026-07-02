@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  Sparkles, LayoutDashboard, MessageSquare, BarChart2,
+LayoutDashboard, MessageSquare, BarChart2,
   Settings, LogOut, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';

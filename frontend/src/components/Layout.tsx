@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   LayoutDashboard, MessageSquare, BarChart2,
-  Settings, LogOut, ChevronLeft, ChevronRight, Menu, Sparkles, X
+  Settings, LogOut, ChevronLeft, ChevronRight, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Footer from '../components/Footer';
@@ -153,7 +153,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-slate-900 dark:bg-white rounded-md flex items-center justify-center">
-              <Sparkles className="w-3 h-3 text-white dark:text-slate-900" />
+              <span className="text-white dark:text-slate-900 text-xs font-black tracking-tight">IQ</span>
             </div>
             <span className="text-base font-bold text-slate-900 dark:text-white">InterviewIQ</span>
           </div>
