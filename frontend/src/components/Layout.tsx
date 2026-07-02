@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState} from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
   LayoutDashboard, MessageSquare, BarChart2,
@@ -20,6 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -143,24 +144,49 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        {/* Mobile Top Bar */}
-        <div className="md:hidden flex items-center justify-between px-4 py-4 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-slate-900 dark:bg-white rounded-md flex items-center justify-center">
-              <span className="text-white dark:text-slate-900 text-xs font-black tracking-tight">IQ</span>
-            </div>
-            <span className="text-base font-bold text-slate-900 dark:text-white">InterviewIQ</span>
-          </div>
-          <div className="w-7 h-7 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold">
-            {initials}
-          </div>
+       {/* Mobile Top Bar */}
+<div className="md:hidden flex items-center justify-between px-4 py-4 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+  <button
+    onClick={() => setMobileOpen(true)}
+    className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
+  >
+    <Menu className="w-5 h-5" />
+  </button>
+  <div className="flex items-center gap-2">
+    <div className="w-6 h-6 bg-slate-900 dark:bg-white rounded-md flex items-center justify-center">
+      <span className="text-white dark:text-slate-900 text-xs font-black tracking-tight">IQ</span>
+    </div>
+    <span className="text-base font-bold text-slate-900 dark:text-white">InterviewIQ</span>
+  </div>
+  <div className="relative">
+    <button
+      onClick={() => setAvatarOpen(!avatarOpen)}
+      className="w-7 h-7 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold"
+    >
+      {initials}
+    </button>
+    {avatarOpen && (
+      <div className="absolute right-0 top-9 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
+        <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800">
+          <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">{user?.name}</p>
+          <p className="text-xs text-slate-400 truncate">{user?.email}</p>
         </div>
+        <button
+          onClick={() => { setAvatarOpen(false); navigate('/settings'); }}
+          className="w-full text-left px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+        >
+          Settings
+        </button>
+        <button
+          onClick={() => { setAvatarOpen(false); handleLogout(); }}
+          className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+        >
+          Logout
+        </button>
+      </div>
+    )}
+  </div>
+</div>
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
