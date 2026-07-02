@@ -60,14 +60,21 @@ export default function Analytics() {
   const hasData = stats && stats.topicData && stats.topicData.length > 0;
   const pieData = hasData ? stats.topicData.map((t) => ({ name: t.skill, value: t.score })) : [];
   const skillData = hasData ? stats.topicData : [];
-  const strengths = hasData ? [...stats.topicData].sort((a, b) => b.score - a.score).slice(0, 3) : [];
-  const weaknesses = hasData ? [...stats.topicData].sort((a, b) => a.score - b.score).slice(0, 3) : [];
   const radarData = hasData ? stats.topicData.map((t) => ({ subject: t.skill, score: t.score })) : [];
+
+  const avgTopicScore = hasData
+    ? stats.topicData.reduce((sum, t) => sum + t.score, 0) / stats.topicData.length
+    : 0;
+  const strengths = hasData
+    ? [...stats.topicData].sort((a, b) => b.score - a.score).filter((t) => t.score > avgTopicScore).slice(0, 3)
+    : [];
+  const weaknesses = hasData
+    ? [...stats.topicData].sort((a, b) => a.score - b.score).filter((t) => t.score < avgTopicScore).slice(0, 3)
+    : [];
 
   return (
     <div className="p-6 md:p-8">
 
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Analytics</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -161,32 +168,40 @@ export default function Analytics() {
           <div className="flex flex-col gap-5">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex-1">
               <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4">Strengths</h2>
-              <div className="space-y-3">
-                {strengths.map((s) => (
-                  <div key={s.skill} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">{s.skill}</span>
+              {strengths.length > 0 ? (
+                <div className="space-y-3">
+                  {strengths.map((s) => (
+                    <div key={s.skill} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                        <span className="text-sm text-slate-600 dark:text-slate-400">{s.skill}</span>
+                      </div>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">{s.score}%</span>
                     </div>
-                    <span className="text-sm font-bold text-green-600 dark:text-green-400">{s.score}%</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-400">Complete more interviews to identify your strengths.</p>
+              )}
             </div>
 
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex-1">
               <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4">Areas to improve</h2>
-              <div className="space-y-3">
-                {weaknesses.map((w) => (
-                  <div key={w.skill} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">{w.skill}</span>
+              {weaknesses.length > 0 ? (
+                <div className="space-y-3">
+                  {weaknesses.map((w) => (
+                    <div key={w.skill} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
+                        <span className="text-sm text-slate-600 dark:text-slate-400">{w.skill}</span>
+                      </div>
+                      <span className="text-sm font-bold text-red-600 dark:text-red-400">{w.score}%</span>
                     </div>
-                    <span className="text-sm font-bold text-red-600 dark:text-red-400">{w.score}%</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-400">No weak areas detected — keep practicing to get more insights.</p>
+              )}
             </div>
           </div>
 

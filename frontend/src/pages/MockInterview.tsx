@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import QuestionCard from '../components/QuestionCard';
 import { Upload, Loader2, Save, CheckCircle, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +32,9 @@ export default function MockInterview() {
   const [interviewSummary, setInterviewSummary] = useState('');
   const [showDebrief, setShowDebrief] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_URL;
+
+  // Refs for each question for auto-scroll
+  const questionRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const extractTextFromPDF = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
@@ -105,8 +108,12 @@ export default function MockInterview() {
   };
 
   const getFeedback = async () => {
-    if (!selectedQuestion || !currentAnswer.trim()) { toast.error('Please select a question and provide an answer'); return; }
-    setIsFeedbackLoading(true); setFeedback('');
+    if (!selectedQuestion || !currentAnswer.trim()) {
+      toast.error('Please select a question and provide an answer');
+      return;
+    }
+    setIsFeedbackLoading(true);
+    setFeedback('');
     try {
       const response = await fetch(`${BASE_URL}/api/interview/get-feedback`, {
         method: 'POST',
@@ -116,19 +123,54 @@ export default function MockInterview() {
       if (!response.ok) throw new Error('Failed to get feedback');
       const data = await response.json();
       setFeedback(data.feedback);
-      const updatedQuestion = { ...selectedQuestion, answer: currentAnswer, feedback: data.feedback, score: data.score || 7 };
-      setAnsweredQuestions((prev) => [...prev.filter((q) => q.id !== selectedQuestion.id), updatedQuestion]);
+
+      const updatedQuestion = {
+        ...selectedQuestion,
+        answer: currentAnswer,
+        feedback: data.feedback,
+        score: data.score || 7,
+      };
+
+      setAnsweredQuestions((prev) => [
+        ...prev.filter((q) => q.id !== selectedQuestion.id),
+        updatedQuestion,
+      ]);
+
+      // Auto-scroll to next unanswered question after 1.5s
+      setTimeout(() => {
+        const currentIndex = questions.findIndex((q) => q.id === selectedQuestion.id);
+        const nextQuestion = questions.slice(currentIndex + 1).find(
+          (q) => ![...answeredQuestions, updatedQuestion].some((aq) => aq.id === q.id)
+        );
+        if (nextQuestion && questionRefs.current[nextQuestion.id]) {
+          questionRefs.current[nextQuestion.id]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+          setSelectedQuestion(nextQuestion);
+          setCurrentAnswer('');
+          setFeedback('');
+        }
+      }, 1500);
+
     } catch (error) {
       console.error('Error:', error);
       toast.error('Failed to get feedback.');
-    } finally { setIsFeedbackLoading(false); }
+    } finally {
+      setIsFeedbackLoading(false);
+    }
   };
 
   const saveInterview = async () => {
-    if (answeredQuestions.length === 0) { toast.error('Please answer at least one question before saving.'); return; }
+    if (answeredQuestions.length === 0) {
+      toast.error('Please answer at least one question before saving.');
+      return;
+    }
     setIsSaving(true);
     try {
-      const overallScore = Math.round(answeredQuestions.reduce((sum, q) => sum + (q.score || 0), 0) / answeredQuestions.length);
+      const overallScore = Math.round(
+        answeredQuestions.reduce((sum, q) => sum + (q.score || 0), 0) / answeredQuestions.length
+      );
       const response = await fetch(`${BASE_URL}/api/interview/save-interview`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -142,7 +184,9 @@ export default function MockInterview() {
     } catch (error) {
       console.error('Error:', error);
       toast.error('Failed to save interview.');
-    } finally { setIsSaving(false); }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const resetInterview = () => {
@@ -164,13 +208,12 @@ export default function MockInterview() {
         <p className="text-sm text-slate-500 dark:text-slate-400">Upload your resume and start practicing.</p>
       </div>
 
-      {/* ── Setup screen ── */}
+      {/* Setup screen */}
       {questions.length === 0 && (
         <div className="max-w-2xl mx-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Setup your interview</h2>
 
-            {/* Resume upload */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Resume <span className="text-slate-400 font-normal">(optional — auto-detects role)</span>
@@ -193,7 +236,7 @@ export default function MockInterview() {
                       <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm">{file.name}</p>
                       {suggestedRole && (
                         <span className="text-xs bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 px-3 py-1 rounded-full font-medium">
-                          ✨ Detected: {suggestedRole}
+                          Detected: {suggestedRole}
                         </span>
                       )}
                       <p className="text-xs text-slate-400">Click to change</p>
@@ -209,7 +252,6 @@ export default function MockInterview() {
               </div>
             </div>
 
-            {/* Role */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Target role
@@ -224,7 +266,10 @@ export default function MockInterview() {
                   className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none pr-10 transition"
                 />
                 {role && (
-                  <button onClick={() => { setRole(''); setSuggestedRole(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                  <button
+                    onClick={() => { setRole(''); setSuggestedRole(''); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -232,7 +277,6 @@ export default function MockInterview() {
               <p className="text-xs text-slate-400 mt-1">Type any role — not limited to a fixed list</p>
             </div>
 
-            {/* Difficulty */}
             <div className="mb-8">
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Difficulty level</label>
               <div className="grid grid-cols-3 gap-3">
@@ -257,21 +301,18 @@ export default function MockInterview() {
               disabled={!role.trim() || !difficulty || isGenerating || isParsing}
               className="w-full bg-slate-900 dark:bg-white hover:bg-slate-700 dark:hover:bg-slate-100 text-white dark:text-slate-900 py-3 rounded-lg font-semibold text-sm transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {isGenerating ? (
-                <><Loader2 className="w-4 h-4 animate-spin" />Generating questions...</>
-              ) : (
-                'Generate questions'
-              )}
+              {isGenerating
+                ? <><Loader2 className="w-4 h-4 animate-spin" />Generating questions...</>
+                : 'Generate questions'}
             </button>
           </div>
         </div>
       )}
 
-      {/* ── Debrief screen ── */}
+      {/* Debrief screen */}
       {questions.length > 0 && showDebrief && (
         <div className="max-w-2xl mx-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center">
-            {/* Score circle */}
             <div className="mb-6">
               <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl font-bold border-4 ${
                 avgScore >= 4 ? 'border-green-500 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10'
@@ -286,7 +327,6 @@ export default function MockInterview() {
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Interview complete!</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{role} · {difficulty}</p>
 
-            {/* Per-question scores */}
             <div className="grid grid-cols-5 gap-2 mb-6">
               {[...answeredQuestions].sort((a, b) => a.id - b.id).map((q) => (
                 <div key={q.id} className={`rounded-xl p-3 border ${
@@ -305,12 +345,9 @@ export default function MockInterview() {
               ))}
             </div>
 
-            {/* AI debrief */}
             {interviewSummary && (
               <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-5 mb-6 text-left">
-                <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
-                  InterviewIQ Debrief
-                </h3>
+                <h3 className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-2">InterviewIQ Debrief</h3>
                 <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{interviewSummary}</p>
               </div>
             )}
@@ -325,18 +362,15 @@ export default function MockInterview() {
         </div>
       )}
 
-      {/* ── Interview screen ── */}
+      {/* Interview screen */}
       {questions.length > 0 && !showDebrief && (
         <div className="max-w-4xl mx-auto">
 
-          {/* Resume profile chip strip */}
-          {/* Resume profile chip strip */}
-{resumeProfile?.skills && resumeProfile.skills.length > 0 && (
-  <ResumeSkills skills={resumeProfile.skills} />
-)}
+          {resumeProfile?.skills && resumeProfile.skills.length > 0 && (
+            <ResumeSkills skills={resumeProfile.skills} />
+          )}
 
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8">
-            {/* Header */}
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">Interview questions</h2>
@@ -361,14 +395,13 @@ export default function MockInterview() {
               </div>
             </div>
 
-            {/* Progress bar */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-slate-500 dark:text-slate-400">
                   Progress: <span className="text-slate-900 dark:text-white font-semibold">{answeredQuestions.length}/{questions.length}</span> answered
                 </span>
                 {answeredQuestions.length === questions.length && (
-                  <span className="text-xs text-green-600 dark:text-green-400 font-semibold">✓ All done — save your interview!</span>
+                  <span className="text-xs text-green-600 dark:text-green-400 font-semibold">All done — save your interview!</span>
                 )}
               </div>
               <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
@@ -379,15 +412,21 @@ export default function MockInterview() {
               </div>
             </div>
 
-            {/* Questions */}
             <div className="space-y-4">
               {questions.map((q) => {
                 const isSelected = selectedQuestion?.id === q.id;
                 const answeredQ = answeredQuestions.find((aq) => aq.id === q.id);
                 return (
-                  <div key={q.id}>
+                  <div
+                    key={q.id}
+                    ref={(el) => { questionRefs.current[q.id] = el; }}
+                  >
                     <div
-                      onClick={() => { setSelectedQuestion(isSelected ? null : q); setCurrentAnswer(''); setFeedback(''); }}
+                      onClick={() => {
+                        setSelectedQuestion(isSelected ? null : q);
+                        setCurrentAnswer('');
+                        setFeedback('');
+                      }}
                       className={`cursor-pointer rounded-xl transition ${isSelected ? 'ring-2 ring-blue-500' : ''} ${answeredQ && !isSelected ? 'opacity-60' : ''}`}
                     >
                       <QuestionCard question={q} />
@@ -400,7 +439,7 @@ export default function MockInterview() {
                           : answeredQ.score >= 3 ? 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20'
                           : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20'
                         }`}>
-                          ✓ Answered · Score: {answeredQ.score}/5
+                          Answered · Score: {answeredQ.score}/5
                         </span>
                       </div>
                     )}
@@ -429,7 +468,7 @@ export default function MockInterview() {
 
                         {feedback && (
                           <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl">
-                            <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2 text-sm">
+                            <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2 text-sm">
                               InterviewIQ Feedback
                             </h4>
                             <p className="text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed text-sm">{feedback}</p>
@@ -461,6 +500,7 @@ export default function MockInterview() {
     </div>
   );
 }
+
 function ResumeSkills({ skills }: { skills: string[] }) {
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? skills : skills.slice(0, 10);
@@ -468,8 +508,8 @@ function ResumeSkills({ skills }: { skills: string[] }) {
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-500/20 rounded-2xl p-5 mb-5">
-      <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2 uppercase tracking-wide">
-        Resume analysis questions personalized to your profile
+      <h3 className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-3 uppercase tracking-wide">
+        Resume analysis — questions personalized to your profile
       </h3>
       <div className="flex flex-wrap gap-2">
         {visible.map((skill) => (
