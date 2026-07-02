@@ -6,7 +6,7 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
 
-const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+const COLORS = ['#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 interface TopicData { skill: string; score: number; }
@@ -29,8 +29,8 @@ export default function Analytics() {
   const fetchStats = async () => {
     try {
       const response = await fetch(`${BASE_URL}/api/interview/stats`, {
-  headers: { Authorization: `Bearer ${token}` },
-});
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
       setStats(data);
@@ -44,14 +44,16 @@ export default function Analytics() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-96 text-red-400 text-lg">{error}</div>
+      <div className="flex items-center justify-center h-96">
+        <p className="text-red-500 dark:text-red-400">{error}</p>
+      </div>
     );
   }
 
@@ -63,24 +65,30 @@ export default function Analytics() {
   const radarData = hasData ? stats.topicData.map((t) => ({ subject: t.skill, score: t.score })) : [];
 
   return (
-    <div className="p-6 md:p-8 text-slate-100">
-      <h1 className="text-2xl font-bold text-slate-100 mb-2">Analytics</h1>
-      <p className="text-slate-400 mb-8">
-        {hasData
-          ? `Based on ${stats.totalInterviews} interview${stats.totalInterviews > 1 ? 's' : ''} completed`
-          : 'Complete interviews to unlock your analytics'}
-      </p>
+    <div className="p-6 md:p-8">
+
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Analytics</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          {hasData
+            ? `Based on ${stats.totalInterviews} interview${stats.totalInterviews > 1 ? 's' : ''} completed`
+            : 'Complete interviews to unlock your analytics'}
+        </p>
+      </div>
 
       {!hasData ? (
-        <div className="flex flex-col items-center justify-center h-64 text-slate-400 bg-slate-800 rounded-2xl border border-slate-700">
-          <p className="text-xl font-semibold mb-2">No data yet</p>
-          <p className="text-sm">Complete a mock interview to see your analytics here.</p>
+        <div className="flex flex-col items-center justify-center h-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+          <p className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">No data yet</p>
+          <p className="text-sm text-slate-400">Complete a mock interview to see your analytics here.</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-slate-100 mb-6">Topic Breakdown</h2>
-            <ResponsiveContainer width="100%" height={300}>
+        <div className="grid md:grid-cols-2 gap-6">
+
+          {/* Topic Breakdown */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-6">Topic breakdown</h2>
+            <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
                   data={pieData} cx="50%" cy="50%" labelLine={false}
@@ -91,36 +99,53 @@ export default function Analytics() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }} labelStyle={{ color: '#94a3b8' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                  }}
+                  labelStyle={{ color: '#64748b' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-slate-100 mb-6">Skill Radar</h2>
-            <ResponsiveContainer width="100%" height={300}>
+          {/* Skill Radar */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-6">Skill radar</h2>
+            <ResponsiveContainer width="100%" height={280}>
               <RadarChart data={radarData}>
-                <PolarGrid stroke="#334155" />
+                <PolarGrid stroke="#e2e8f0" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} />
-                <Radar name="Score" dataKey="score" stroke="#818cf8" fill="#818cf8" fillOpacity={0.3} />
-                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                <Radar name="Score" dataKey="score" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                  }}
+                />
               </RadarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-slate-100 mb-6">Skill Progress</h2>
+          {/* Skill Progress */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-6">Skill progress</h2>
             <div className="space-y-5">
               {skillData.map((skill, i) => (
                 <div key={skill.skill}>
-                  <div className="flex justify-between mb-2">
-                    <span className="font-semibold text-slate-300">{skill.skill}</span>
-                    <span className="font-bold" style={{ color: COLORS[i % COLORS.length] }}>{skill.score}%</span>
+                  <div className="flex justify-between mb-1.5">
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{skill.skill}</span>
+                    <span className="text-sm font-bold" style={{ color: COLORS[i % COLORS.length] }}>{skill.score}%</span>
                   </div>
-                  <div className="w-full bg-slate-700 rounded-full h-3">
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                     <div
-                      className="h-3 rounded-full transition-all duration-700"
+                      className="h-2 rounded-full transition-all duration-700"
                       style={{
                         width: `${skill.score}%`,
                         background: `linear-gradient(to right, ${COLORS[i % COLORS.length]}, ${COLORS[(i + 1) % COLORS.length]})`,
@@ -132,37 +157,39 @@ export default function Analytics() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6">
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 flex-1">
-              <h2 className="text-xl font-bold text-slate-100 mb-4">Strengths</h2>
+          {/* Strengths & Weaknesses */}
+          <div className="flex flex-col gap-5">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex-1">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4">Strengths</h2>
               <div className="space-y-3">
                 {strengths.map((s) => (
                   <div key={s.skill} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-400 rounded-full" />
-                      <span className="text-slate-300">{s.skill}</span>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">{s.skill}</span>
                     </div>
-                    <span className="text-green-400 font-bold text-sm">{s.score}%</span>
+                    <span className="text-sm font-bold text-green-600 dark:text-green-400">{s.score}%</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 flex-1">
-              <h2 className="text-xl font-bold text-slate-100 mb-4">Areas to Improve</h2>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex-1">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4">Areas to improve</h2>
               <div className="space-y-3">
                 {weaknesses.map((w) => (
                   <div key={w.skill} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full" />
-                      <span className="text-slate-300">{w.skill}</span>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">{w.skill}</span>
                     </div>
-                    <span className="text-red-400 font-bold text-sm">{w.score}%</span>
+                    <span className="text-sm font-bold text-red-600 dark:text-red-400">{w.score}%</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+
         </div>
       )}
     </div>

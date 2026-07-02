@@ -8,25 +8,18 @@ export default function Settings() {
   const { user, token, updateUser } = useAuth();
   const BASE_URL = import.meta.env.VITE_API_URL;
 
-
-  // Profile form
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileAlert, setProfileAlert] = useState<AlertType>(null);
 
-  // Password form
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const [passwordAlert, setPasswordAlert] = useState<AlertType>(null);
 
-  const showAlert = (
-    setter: (a: AlertType) => void,
-    type: 'success' | 'error',
-    message: string
-  ) => {
+  const showAlert = (setter: (a: AlertType) => void, type: 'success' | 'error', message: string) => {
     setter({ type, message });
     setTimeout(() => setter(null), 4000);
   };
@@ -36,23 +29,16 @@ export default function Settings() {
       showAlert(setProfileAlert, 'error', 'Name and email are required.');
       return;
     }
-
     setIsSavingProfile(true);
     try {
       const response = await fetch(`${BASE_URL}/api/auth/update-profile`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name, email }),
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update profile');
-
-     updateUser(data.user);
-
+      updateUser(data.user);
       showAlert(setProfileAlert, 'success', 'Profile updated successfully!');
     } catch (err: any) {
       showAlert(setProfileAlert, 'error', err.message);
@@ -74,24 +60,16 @@ export default function Settings() {
       showAlert(setPasswordAlert, 'error', 'Password must be at least 6 characters.');
       return;
     }
-
     setIsSavingPassword(true);
     try {
       const response = await fetch(`${BASE_URL}/api/auth/change-password`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to change password');
-
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
       showAlert(setPasswordAlert, 'success', 'Password changed successfully!');
     } catch (err: any) {
       showAlert(setPasswordAlert, 'error', err.message);
@@ -105,13 +83,12 @@ export default function Settings() {
     return (
       <div className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium ${
         alert.type === 'success'
-          ? 'bg-green-900/30 border border-green-700/40 text-green-400'
-          : 'bg-red-900/30 border border-red-700/40 text-red-400'
+          ? 'bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-400'
+          : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
       }`}>
         {alert.type === 'success'
           ? <CheckCircle className="w-4 h-4 flex-shrink-0" />
-          : <AlertCircle className="w-4 h-4 flex-shrink-0" />
-        }
+          : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
         {alert.message}
       </div>
     );
@@ -121,53 +98,58 @@ export default function Settings() {
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : '?';
 
-  return (
-    <div className="p-6 md:p-8 text-slate-100 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-slate-100 mb-2">Settings</h1>
-      <p className="text-slate-400 mb-8">Manage your account preferences.</p>
+  const inputClass = "w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition";
+  const labelClass = "block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5";
 
-      {/* Avatar */}
-      <div className="flex items-center gap-4 mb-8 p-6 bg-slate-800 border border-slate-700 rounded-2xl">
-        <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+  return (
+    <div className="p-6 md:p-8 max-w-2xl mx-auto">
+      {/* Page header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Settings</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Manage your account preferences.</p>
+      </div>
+
+      {/* Avatar card */}
+      <div className="flex items-center gap-4 mb-6 p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+        <div className="w-14 h-14 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-slate-900 text-xl font-bold flex-shrink-0">
           {initials}
         </div>
         <div>
-          <p className="text-lg font-semibold text-slate-100">{user?.name}</p>
-          <p className="text-slate-400 text-sm">{user?.email}</p>
+          <p className="font-semibold text-slate-900 dark:text-white">{user?.name}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{user?.email}</p>
         </div>
       </div>
 
-      {/* Update Profile */}
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 mb-6">
-        <h2 className="text-lg font-bold text-slate-100 mb-5 flex items-center gap-2">
-          <User className="w-5 h-5 text-indigo-400" />
+      {/* Profile section */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-5">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+          <User className="w-4 h-4 text-blue-500" />
           Profile Information
         </h2>
 
         <div className="space-y-4 mb-5">
           <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">Full Name</label>
+            <label className={labelClass}>Full name</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 text-slate-100 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                className={inputClass}
                 placeholder="Your full name"
               />
             </div>
           </div>
-
           <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">Email Address</label>
+            <label className={labelClass}>Email address</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 text-slate-100 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                className={inputClass}
                 placeholder="your@email.com"
               />
             </div>
@@ -179,65 +161,41 @@ export default function Settings() {
         <button
           onClick={handleUpdateProfile}
           disabled={isSavingProfile}
-          className="mt-4 w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="mt-4 w-full bg-slate-900 dark:bg-white hover:bg-slate-700 dark:hover:bg-slate-100 text-white dark:text-slate-900 py-2.5 rounded-lg font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isSavingProfile ? (
-            <><Loader2 className="w-4 h-4 animate-spin" />Saving...</>
-          ) : (
-            <><Save className="w-4 h-4" />Save Profile</>
-          )}
+          {isSavingProfile
+            ? <><Loader2 className="w-4 h-4 animate-spin" />Saving...</>
+            : <><Save className="w-4 h-4" />Save profile</>}
         </button>
       </div>
 
-      {/* Change Password */}
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-        <h2 className="text-lg font-bold text-slate-100 mb-5 flex items-center gap-2">
-          <Lock className="w-5 h-5 text-indigo-400" />
+      {/* Password section */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+          <Lock className="w-4 h-4 text-blue-500" />
           Change Password
         </h2>
 
         <div className="space-y-4 mb-5">
-          <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">Current Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 text-slate-100 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="••••••••"
-              />
+          {[
+            { label: 'Current password', value: currentPassword, setter: setCurrentPassword },
+            { label: 'New password',     value: newPassword,     setter: setNewPassword },
+            { label: 'Confirm new password', value: confirmPassword, setter: setConfirmPassword },
+          ].map(({ label, value, setter }) => (
+            <div key={label}>
+              <label className={labelClass}>{label}</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <input
+                  type="password"
+                  value={value}
+                  onChange={(e) => setter(e.target.value)}
+                  className={inputClass}
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">New Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 text-slate-100 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">Confirm New Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 text-slate-100 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
+          ))}
         </div>
 
         <Alert alert={passwordAlert} />
@@ -245,13 +203,11 @@ export default function Settings() {
         <button
           onClick={handleChangePassword}
           disabled={isSavingPassword}
-          className="mt-4 w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="mt-4 w-full bg-slate-900 dark:bg-white hover:bg-slate-700 dark:hover:bg-slate-100 text-white dark:text-slate-900 py-2.5 rounded-lg font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isSavingPassword ? (
-            <><Loader2 className="w-4 h-4 animate-spin" />Changing...</>
-          ) : (
-            <><Lock className="w-4 h-4" />Change Password</>
-          )}
+          {isSavingPassword
+            ? <><Loader2 className="w-4 h-4 animate-spin" />Changing...</>
+            : <><Lock className="w-4 h-4" />Change password</>}
         </button>
       </div>
     </div>

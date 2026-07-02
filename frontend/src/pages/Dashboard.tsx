@@ -31,9 +31,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const BASE_URL = import.meta.env.VITE_API_URL;
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  useEffect(() => { fetchStats(); }, []);
 
   const fetchStats = async () => {
     try {
@@ -57,15 +55,14 @@ export default function Dashboard() {
       }))
     : [];
 
-  const improvement =
-    scoreHistory.length >= 2
-      ? scoreHistory[scoreHistory.length - 1].score - scoreHistory[0].score
-      : 0;
+  const improvement = scoreHistory.length >= 2
+    ? scoreHistory[scoreHistory.length - 1].score - scoreHistory[0].score
+    : 0;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
       </div>
     );
   }
@@ -73,18 +70,24 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-red-400 text-lg">{error}</p>
+        <p className="text-red-500 dark:text-red-400">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-8 text-slate-100">
-      <h1 className="text-2xl font-bold text-slate-100 mb-2">Dashboard</h1>
-      <p className="text-slate-400 mb-8">Welcome back, <span className="text-slate-100 font-semibold">{user?.name?.split(' ')[0]}</span> 👋</p>
+    <div className="p-6 md:p-8">
+
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Dashboard</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Welcome back, <span className="text-slate-900 dark:text-white font-semibold">{user?.name?.split(' ')[0]}</span> 👋
+        </p>
+      </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatsCard
           title="Total Interviews"
           value={stats?.totalInterviews ?? 0}
@@ -104,90 +107,98 @@ export default function Dashboard() {
           change={stats?.bestTopic ? 'Top skill' : 'No data yet'}
         />
         <StatsCard
-  title="Improvement"
-  value={
-    improvement !== 0
-      ? `${improvement > 0 ? '+' : ''}${improvement} pts`
-      : '—'
-  }
-  icon={TrendingUp}
-  change="this week"
-/>
+          title="Improvement"
+          value={improvement !== 0 ? `${improvement > 0 ? '+' : ''}${improvement} pts` : '—'}
+          icon={TrendingUp}
+          change="this week"
+        />
       </div>
 
-      {/* Score Trend Chart */}
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 mb-8">
-        <h2 className="text-xl font-bold text-slate-100 mb-6">Score Trend</h2>
+      {/* Score Trend */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-6">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white mb-6">Score trend</h2>
         {scoreHistory.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={280}>
             <LineChart data={scoreHistory}>
-              <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-              <XAxis dataKey="date" stroke="#94a3b8" />
-              <YAxis domain={[0, 10]} stroke="#94a3b8" />
+              <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" className="dark:stroke-slate-700" />
+              <XAxis dataKey="date" stroke="#94a3b8" tick={{ fontSize: 12 }} />
+              <YAxis domain={[0, 10]} stroke="#94a3b8" tick={{ fontSize: 12 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px' }}
-                labelStyle={{ color: '#94a3b8' }}
-                itemStyle={{ color: '#818cf8' }}
+                contentStyle={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                }}
+                labelStyle={{ color: '#64748b' }}
+                itemStyle={{ color: '#3b82f6' }}
               />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#818cf8"
-                strokeWidth={3}
-                dot={{ fill: '#818cf8', r: 5 }}
-                activeDot={{ r: 7 }}
+                stroke="#3b82f6"
+                strokeWidth={2.5}
+                dot={{ fill: '#3b82f6', r: 4 }}
+                activeDot={{ r: 6 }}
               />
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-48 text-slate-400">
+          <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
             Complete your first interview to see your score trend.
           </div>
         )}
       </div>
 
-      {/* Recent Interviews Table */}
-      <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-        <h2 className="text-xl font-bold text-slate-100 mb-6">Recent Interviews</h2>
+      {/* Recent Interviews */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+        <h2 className="text-base font-bold text-slate-900 dark:text-white mb-6">Recent interviews</h2>
         {stats?.recentInterviews && stats.recentInterviews.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Role</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Date</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Score</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Duration</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-semibold">Questions</th>
+                <tr className="border-b border-slate-100 dark:border-slate-800">
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">Role</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">Date</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">Score</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">Duration</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wide">Questions</th>
                 </tr>
               </thead>
               <tbody>
                 {stats.recentInterviews.map((interview) => (
-                  <tr key={interview.id} className="border-b border-slate-700/50 hover:bg-slate-700/50 transition">
-                    <td className="py-4 px-4 font-medium text-slate-100">{interview.role}</td>
-                    <td className="py-4 px-4 text-slate-400">
+                  <tr
+                    key={interview.id}
+                    className="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition"
+                  >
+                    <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-white">
+                      {interview.role}
+                    </td>
+                    <td className="py-3.5 px-4 text-sm text-slate-500 dark:text-slate-400">
                       {new Date(interview.date).toLocaleDateString('en-IN', {
                         day: 'numeric', month: 'short', year: 'numeric'
                       })}
                     </td>
-                    <td className="py-4 px-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        interview.score >= 8 ? 'bg-green-900/30 text-green-400' :
-                        interview.score >= 6 ? 'bg-yellow-900/30 text-yellow-400' :
-                        'bg-red-900/30 text-red-400'
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                        interview.score >= 8
+                          ? 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20'
+                          : interview.score >= 6
+                          ? 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/20'
+                          : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20'
                       }`}>
                         {interview.score}/10
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-slate-400">{interview.duration}</td>
-                    <td className="py-4 px-4 text-slate-400">{interview.questions}</td>
+                    <td className="py-3.5 px-4 text-sm text-slate-500 dark:text-slate-400">{interview.duration}</td>
+                    <td className="py-3.5 px-4 text-sm text-slate-500 dark:text-slate-400">{interview.questions}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-32 text-slate-400">
+          <div className="flex items-center justify-center h-32 text-sm text-slate-400">
             No interviews yet. Complete a mock interview to see your history here.
           </div>
         )}

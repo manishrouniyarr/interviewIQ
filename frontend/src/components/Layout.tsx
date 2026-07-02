@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
-LayoutDashboard, MessageSquare, BarChart2,
-  Settings, LogOut, ChevronLeft, ChevronRight, Menu
+  LayoutDashboard, MessageSquare, BarChart2,
+  Settings, LogOut, ChevronLeft, ChevronRight, Menu, Sparkles, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Footer from '../components/Footer';
 
 const navItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/dashboard',      label: 'Dashboard',     icon: LayoutDashboard },
   { path: '/mock-interview', label: 'Mock Interview', icon: MessageSquare },
-  { path: '/analytics', label: 'Analytics', icon: BarChart2 },
-  { path: '/settings', label: 'Settings', icon: Settings },
+  { path: '/analytics',      label: 'Analytics',      icon: BarChart2 },
+  { path: '/settings',       label: 'Settings',       icon: Settings },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -33,19 +33,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className={`flex items-center gap-3 px-5 py-6 border-b border-slate-800 ${collapsed ? 'justify-center px-3' : ''}`}>
-        <svg width="40" height="40" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="28" height="28" rx="8" fill="#6366f1"/>
-  <path d="M14 6L16.5 11.5H22L17.5 14.5L19.5 20L14 16.5L8.5 20L10.5 14.5L6 11.5H11.5L14 6Z" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round"/>
-  <circle cx="20" cy="8" r="2" fill="#a5b4fc"/>
-</svg>
+      <div className={`flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-800 ${collapsed ? 'justify-center px-3' : ''}`}>
+        <div className="w-7 h-7 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-3.5 h-3.5 text-white dark:text-slate-900" />
+        </div>
         {!collapsed && (
-          <span className="text-lg font-bold text-slate-100">InterviewIQ</span>
+          <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">InterviewIQ</span>
         )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-6 space-y-1">
+      <nav className="flex-1 px-3 py-5 space-y-0.5">
         {navItems.map(({ path, label, icon: Icon }) => {
           const isActive = location.pathname === path;
           return (
@@ -53,17 +51,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               key={path}
               to={path}
               onClick={() => setMobileOpen(false)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
-              } ${collapsed ? 'justify-center' : ''}`}
               title={collapsed ? label : ''}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                collapsed ? 'justify-center' : ''
+              } ${
+                isActive
+                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
+              }`}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              {!collapsed && <span className="text-sm font-medium">{label}</span>}
+              <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-blue-500' : ''}`} />
+              {!collapsed && <span>{label}</span>}
               {isActive && !collapsed && (
-                <div className="ml-auto w-1.5 h-1.5 bg-indigo-400 rounded-full" />
+                <div className="ml-auto w-1.5 h-1.5 bg-blue-500 rounded-full" />
               )}
             </Link>
           );
@@ -71,26 +71,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* User */}
-      <div className={`px-3 py-4 border-t border-slate-800 ${collapsed ? 'flex flex-col items-center gap-3' : ''}`}>
+      <div className={`px-3 py-4 border-t border-slate-100 dark:border-slate-800 ${collapsed ? 'flex flex-col items-center gap-3' : ''}`}>
         {!collapsed ? (
-          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-            <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="w-7 h-7 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold flex-shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-100 truncate">{user?.name}</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{user?.name}</p>
               <p className="text-xs text-slate-400 truncate">{user?.email}</p>
             </div>
-            <button onClick={handleLogout} className="text-slate-400 hover:text-red-400 transition" title="Logout">
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition flex-shrink-0"
+            >
               <LogOut className="w-4 h-4" />
             </button>
           </div>
         ) : (
           <>
-            <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-7 h-7 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold">
               {initials}
             </div>
-            <button onClick={handleLogout} className="text-slate-400 hover:text-red-400 transition" title="Logout">
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition"
+            >
               <LogOut className="w-4 h-4" />
             </button>
           </>
@@ -100,17 +108,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden">
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors">
 
       {/* Desktop Sidebar */}
-      <aside className={`relative hidden md:flex flex-col h-screen bg-slate-900 border-r border-slate-800 transition-all duration-300 flex-shrink-0 ${collapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`relative hidden md:flex flex-col h-screen bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 flex-shrink-0 ${collapsed ? 'w-[72px]' : 'w-60'}`}>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-8 w-6 h-6 bg-slate-700 border border-slate-600 rounded-full flex items-center justify-center hover:bg-slate-600 transition z-10"
+          className="absolute -right-3 top-8 w-6 h-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700 transition z-10 shadow-sm"
         >
           {collapsed
-            ? <ChevronRight className="w-3 h-3 text-slate-300" />
-            : <ChevronLeft className="w-3 h-3 text-slate-300" />
+            ? <ChevronRight className="w-3 h-3 text-slate-500" />
+            : <ChevronLeft className="w-3 h-3 text-slate-500" />
           }
         </button>
         <SidebarContent />
@@ -119,8 +127,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile Sidebar Overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
-          <aside className="relative flex flex-col w-64 h-full bg-slate-900 border-r border-slate-800 z-50">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
+          <aside className="relative flex flex-col w-60 h-full bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 z-50">
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <SidebarContent />
           </aside>
         </div>
@@ -130,25 +144,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Mobile Top Bar */}
-        <div className="md:hidden flex items-center justify-between px-4 py-4 bg-slate-900 border-b border-slate-800 flex-shrink-0">
-          <button onClick={() => setMobileOpen(true)} className="text-slate-300 hover:text-slate-100">
-            <Menu className="w-6 h-6" />
+        <div className="md:hidden flex items-center justify-between px-4 py-4 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
+          >
+            <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <svg width="40" height="40" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="28" height="28" rx="8" fill="#6366f1"/>
-  <path d="M14 6L16.5 11.5H22L17.5 14.5L19.5 20L14 16.5L8.5 20L10.5 14.5L6 11.5H11.5L14 6Z" fill="white" stroke="white" strokeWidth="0.5" strokeLinejoin="round"/>
-  <circle cx="20" cy="8" r="2" fill="#a5b4fc"/>
-</svg>
-            <span className="text-base font-bold text-slate-100">InterviewIQ</span>
+            <div className="w-6 h-6 bg-slate-900 dark:bg-white rounded-md flex items-center justify-center">
+              <Sparkles className="w-3 h-3 text-white dark:text-slate-900" />
+            </div>
+            <span className="text-base font-bold text-slate-900 dark:text-white">InterviewIQ</span>
           </div>
-          <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+          <div className="w-7 h-7 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-slate-900 text-xs font-bold">
             {initials}
           </div>
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
           {children}
         </main>
         <Footer />
