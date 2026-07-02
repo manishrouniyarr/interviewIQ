@@ -4,12 +4,12 @@ export default function Footer() {
       {'© '}{new Date().getFullYear()}{' Manish Rouniyar '}
       <span className="mx-1">·</span>
       <a
-        href="https://github.com/manishrouniyarr"
+        href="https://manishrouniyar.vercel.app"
         target="_blank"
         rel="noopener noreferrer"
         className="hover:text-slate-600 dark:hover:text-slate-300 transition"
       >
-        GitHub
+        Portfolio
       </a>
     </footer>
   );
