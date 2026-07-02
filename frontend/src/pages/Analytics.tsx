@@ -200,7 +200,7 @@ export default function Analytics() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">No weak areas detected — keep practicing to get more insights.</p>
+                <p className="text-sm text-slate-400">No weak areas detected keep practicing to get more insights.</p>
               )}
             </div>
           </div>
