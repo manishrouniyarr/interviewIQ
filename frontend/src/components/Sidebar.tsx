@@ -48,8 +48,8 @@ export default function Sidebar() {
       {/* Logo */}
       <div className={`flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-800 ${collapsed ? 'justify-center px-3' : ''}`}>
         <div className="w-7 h-7 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-3.5 h-3.5 text-white dark:text-slate-900" />
-        </div>
+  <span className="text-white dark:text-slate-900 text-xs font-black tracking-tight">IQ</span>
+</div>
         {!collapsed && (
           <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">InterviewIQ</span>
         )}

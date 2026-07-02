@@ -260,7 +260,7 @@ export default function MockInterview() {
               {isGenerating ? (
                 <><Loader2 className="w-4 h-4 animate-spin" />Generating questions...</>
               ) : (
-                <><Sparkles className="w-4 h-4" />Generate questions</>
+                'Generate questions'
               )}
             </button>
           </div>
@@ -424,7 +424,7 @@ export default function MockInterview() {
                           >
                             {isFeedbackLoading
                               ? <><Loader2 className="w-4 h-4 animate-spin" />Getting feedback...</>
-                              : <><Sparkles className="w-4 h-4" />Get feedback</>}
+                              : 'Get feedback'}
                           </button>
                         </div>
 
