@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Target, TrendingUp, Zap, ArrowRight, Sparkles, CheckCircle2, Sun, Moon, X } from 'lucide-react';
+import { Target, TrendingUp, Zap, ArrowRight, CheckCircle2, Sun, Moon, X } from 'lucide-react';
 import Footer from '../components/Footer';
 
 function ThemeToggle() {
@@ -326,7 +326,7 @@ function Logo() {
   return (
     <div className="flex items-center gap-2.5">
       <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center">
-        <Sparkles className="w-4 h-4 text-white dark:text-slate-900" />
+        <span className="text-white dark:text-slate-900 text-xs font-black tracking-tight">IQ</span>
       </div>
       <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">InterviewIQ</span>
     </div>
